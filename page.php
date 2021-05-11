@@ -1,5 +1,5 @@
 
-<?php 
+<?php //Use for single pages
 
 get_header();
 
@@ -40,7 +40,7 @@ if ($parentID or $testArray ) { ?>
     <div class="page-links">
       <h2 class="page-links__title"><a href="<?php echo get_permalink($parentID) ?>"><?php echo get_the_title($parentID)?></a></h2>
       <ul class="min-list">
-        <?php //Output all child elements
+        <?php //Output all child elements [Menu of child page links]
             if ($parentID) {
                 $findChildrenOf = $parentID; //Viewing child page
             } else {
@@ -49,7 +49,8 @@ if ($parentID or $testArray ) { ?>
 
             wp_list_pages(array(
                 'title_li' => NULL, //No title title
-                'child_of' => $findChildrenOf
+                'child_of' => $findChildrenOf,
+                'sort_column' => 'menu_order' //Changes order of list options
             ));
         ?>
       </ul>
