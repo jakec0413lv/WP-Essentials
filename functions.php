@@ -18,10 +18,21 @@ function university_files() {
 add_action('wp_enqueue_scripts', 'university_files');
 
 function university_features() {
+
+    //Dynamic Menu Items
     register_nav_menu('headerMenuLocation', 'Header Menu Location');//2nd var will show up in WP admin screen, dynamic menu initialization
     register_nav_menu('footerLocation1', 'Footer Menu Location 1');
     register_nav_menu('footerLocation2', 'Footer Menu Location 2');
     add_theme_support('title-tag'); //Add dynamic titles based on URL [check out add_theme_support documentation!]
+    
+    //Featured Images
+
+        add_theme_support('post-thumbnails'); //Featured Images Support
+
+        //Image Sizes [Regenerate Thumbnails Plug In / Manual Image Crop by Tomasz for cropping needs]
+            add_image_size('professorLandscape', 400, 260, true); //Additional Image Sizes with cropping array( [left, right, center], [top, center, bottom])
+            add_image_size('professorPortrait', 480, 650, true); //Additional Image Sizes with automatic cropping on the center of the photograph
+            add_image_size('pageBanner', 1500, 350, true);
 }
 
 add_action('after_setup_theme', 'university_features');
@@ -30,6 +41,9 @@ add_action('after_setup_theme', 'university_features');
 
 
 function university_post_types() { //Custom post types
+    
+    //Event Post Type
+
     register_post_type('event', array(
         'show_in_rest' => true, //Modern block editor support
     "supports" => array('title', 'editor', 'excerpt', /* 'custom-fields' Use Advanced Custom Fields ACF */), //Supporting excerpts
@@ -47,6 +61,8 @@ function university_post_types() { //Custom post types
         'menu_icon' => 'dashicons-calendar-alt' //Dashicon!
     ));
 
+    //Program Post Type
+
     register_post_type('program', array(
         'show_in_rest' => true, //Modern block editor support
     "supports" => array('title', 'editor', /* 'custom-fields' Use Advanced Custom Fields ACF */), //Supporting excerpts
@@ -62,6 +78,23 @@ function university_post_types() { //Custom post types
 
         ),
         'menu_icon' => 'dashicons-clipboard' //Dashicon!
+    ));
+
+    //Professor Post Type
+
+    register_post_type('professor', array(
+        'show_in_rest' => true, //Modern block editor support
+    "supports" => array('title', 'editor', 'thumbnail' /* 'custom-fields' Use Advanced Custom Fields ACF */), //Supporting excerpts
+        'public' => true, // Post types are visible
+        'labels' => array(
+            'name' => 'Professors', //Name
+            'add_new_item' => 'Add New Professor',
+            'edit_item' => 'Edit Professor',
+            'all_items' => 'All Professors',
+            'singular_name' => 'Professor',
+
+        ),
+        'menu_icon' => 'dashicons-welcome-learn-more' //Dashicon!
     ));
     
 }
@@ -84,6 +117,7 @@ function university_adjust_queries($query) {
             )));
     }
 
+//Program Default 
     if (!is_admin() AND is_post_type_archive('program') AND $query->is_main_query()) { //DIesn;t effect back end, only does event archive, and prevents affecting custom queries
         $query->set('post_per_page', -1); //-1 all that match
         $query->set('orderby', 'title');

@@ -21,6 +21,9 @@ get_header();
         </div>
     <div class = "generic-content">
         <?php the_content();
+
+        //Related Events
+
         $today = date('Ymd');
           $relatedEvents = new WP_Query(array(
             'posts_per_page' => 2, //Post Count [-1 == all posts that meet conditions] / [3 == 3 posts]
@@ -42,6 +45,23 @@ get_header();
               )
             )
          ));
+
+        //Related Professors
+
+         $relatedProfessors = new WP_Query(array(
+          'posts_per_page' => -1, //Post Count [-1 == all posts that meet conditions] / [3 == 3 posts]
+          'post_type' => 'professor', //Post type -- useful for custom types
+          'orderby' =>  'title', //'title' => alphabetical
+          'order' =>  'ASC', //default 'DESC'
+          'meta_query' => array(          
+            array( //If the array of related programs contains the id number of the current program post, post it
+                'key' => 'related_programs',
+                "compare" => 'LIKE',
+                "value" => '"' . get_the_ID() .'"' //Helps with serialization
+            )
+          )
+       ));
+
          if($relatedEvents->have_posts()){
             echo '<hr class="section-break">';
             echo '<h2 class="headline headline--medium">Upcoming ' . get_the_title() . ' Event(s):</h2>';
@@ -65,6 +85,22 @@ get_header();
                  </div>
              <?php } wp_reset_postdata(); //Custom Query cleanup
          }
+
+         //Related Programs
+
+         if($relatedProfessors->have_posts()){
+          echo '<hr class="section-break">';
+          echo '<h2 class="headline headline--medium">' . get_the_title() . ' Professors:';
+          echo '<ul class="professor-cards">';
+          while ($relatedProfessors->have_posts()) {
+                 $relatedProfessors->the_post(); //Gets appropriate data ready ?>
+                 <li class="professor-card__list-item">
+                 <a class="professor-card" href="<?php the_permalink();?>">
+                    <img class="professor-card__image" src="<?php the_post_thumbnail_url('professorLandscape');?>">
+                    <span class="professor-card__name"><?php the_title();?></span>
+                 </a></li>
+           <?php } wp_reset_postdata(); //Custom Query cleanup
+       }  echo '</ul>';
           ?>
     </div>
  </div>
